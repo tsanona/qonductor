@@ -6,7 +6,8 @@ use uuid::Uuid;
 use crate::proto::qconnect::DeviceType;
 
 /// Audio quality capability levels.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
 #[repr(i32)]
 pub enum AudioQuality {
     /// MP3 quality.
@@ -16,6 +17,7 @@ pub enum AudioQuality {
     /// Hi-Res up to 96 kHz.
     HiRes96 = 3,
     /// Hi-Res up to 192 kHz.
+    #[default]
     HiRes192 = 4,
 }
 

@@ -51,6 +51,9 @@ uuid = { version = "1", features = ["std"] }
 # mDNS (pure Rust, no system dependencies)
 mdns-sd = "0.17.1"
 
+# CLI
+clap = { version = "4", features = ["derive"], optional = true }
+
 [dev-dependencies]
 tokio-test = "0.4"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
@@ -58,6 +61,7 @@ wiremock = "0.6"
 
 [features]
 compile-protos = ["dep:prost-build"]
+clap = ["dep:clap"]
 
 [build-dependencies]
 prost-build = { version = "0.13", optional = true }
