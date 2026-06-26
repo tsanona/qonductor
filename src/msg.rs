@@ -29,20 +29,20 @@ pub mod cmd {
 /// which then broadcasts to all connected controllers.
 pub mod report {
     // Session
-    pub use crate::proto::qconnect::RndrSrvrJoinSession as JoinSession;
     pub use crate::proto::qconnect::RndrSrvrDeviceInfoUpdated as DeviceInfoUpdated;
+    pub use crate::proto::qconnect::RndrSrvrJoinSession as JoinSession;
 
     // Playback state
-    pub use crate::proto::qconnect::RndrSrvrStateUpdated as StateUpdated;
     pub use crate::proto::qconnect::RndrSrvrRendererAction as RendererAction;
+    pub use crate::proto::qconnect::RndrSrvrStateUpdated as StateUpdated;
 
     // Volume
     pub use crate::proto::qconnect::RndrSrvrVolumeChanged as VolumeChanged;
     pub use crate::proto::qconnect::RndrSrvrVolumeMuted as VolumeMuted;
 
     // Audio quality
-    pub use crate::proto::qconnect::RndrSrvrFileAudioQualityChanged as FileAudioQualityChanged;
     pub use crate::proto::qconnect::RndrSrvrDeviceAudioQualityChanged as DeviceAudioQualityChanged;
+    pub use crate::proto::qconnect::RndrSrvrFileAudioQualityChanged as FileAudioQualityChanged;
     pub use crate::proto::qconnect::RndrSrvrMaxAudioQualityChanged as MaxAudioQualityChanged;
 }
 
@@ -55,25 +55,25 @@ pub mod ctrl {
     pub use crate::proto::qconnect::CtrlSrvrJoinSession as JoinSession;
 
     // Playback control
-    pub use crate::proto::qconnect::CtrlSrvrSetPlayerState as SetPlayerState;
-    pub use crate::proto::qconnect::CtrlSrvrSetActiveRenderer as SetActiveRenderer;
-    pub use crate::proto::qconnect::CtrlSrvrSetVolume as SetVolume;
     pub use crate::proto::qconnect::CtrlSrvrMuteVolume as MuteVolume;
+    pub use crate::proto::qconnect::CtrlSrvrSetActiveRenderer as SetActiveRenderer;
+    pub use crate::proto::qconnect::CtrlSrvrSetPlayerState as SetPlayerState;
+    pub use crate::proto::qconnect::CtrlSrvrSetVolume as SetVolume;
 
     // Queue management
     pub use crate::proto::qconnect::CtrlSrvrClearQueue as ClearQueue;
-    pub use crate::proto::qconnect::CtrlSrvrQueueLoadTracks as QueueLoadTracks;
-    pub use crate::proto::qconnect::CtrlSrvrQueueInsertTracks as QueueInsertTracks;
     pub use crate::proto::qconnect::CtrlSrvrQueueAddTracks as QueueAddTracks;
+    pub use crate::proto::qconnect::CtrlSrvrQueueInsertTracks as QueueInsertTracks;
+    pub use crate::proto::qconnect::CtrlSrvrQueueLoadTracks as QueueLoadTracks;
     pub use crate::proto::qconnect::CtrlSrvrQueueRemoveTracks as QueueRemoveTracks;
     pub use crate::proto::qconnect::CtrlSrvrQueueReorderTracks as QueueReorderTracks;
     pub use crate::proto::qconnect::CtrlSrvrSetQueueState as SetQueueState;
 
     // Mode settings
-    pub use crate::proto::qconnect::CtrlSrvrSetShuffleMode as SetShuffleMode;
+    pub use crate::proto::qconnect::CtrlSrvrSetAutoplayMode as SetAutoplayMode;
     pub use crate::proto::qconnect::CtrlSrvrSetLoopMode as SetLoopMode;
     pub use crate::proto::qconnect::CtrlSrvrSetMaxAudioQuality as SetMaxAudioQuality;
-    pub use crate::proto::qconnect::CtrlSrvrSetAutoplayMode as SetAutoplayMode;
+    pub use crate::proto::qconnect::CtrlSrvrSetShuffleMode as SetShuffleMode;
 
     // State requests
     pub use crate::proto::qconnect::CtrlSrvrAskForQueueState as AskForQueueState;
@@ -92,15 +92,15 @@ pub mod notify {
     pub use crate::proto::qconnect::SrvrCtrlSessionState as SessionState;
 
     // Queue state
-    pub use crate::proto::qconnect::SrvrCtrlQueueState as QueueState;
     pub use crate::proto::qconnect::SrvrCtrlQueueCleared as QueueCleared;
+    pub use crate::proto::qconnect::SrvrCtrlQueueErrorMessage as QueueErrorMessage;
     pub use crate::proto::qconnect::SrvrCtrlQueueLoadTracks as QueueLoadTracks;
+    pub use crate::proto::qconnect::SrvrCtrlQueueState as QueueState;
     pub use crate::proto::qconnect::SrvrCtrlQueueTracksAdded as QueueTracksAdded;
     pub use crate::proto::qconnect::SrvrCtrlQueueTracksInserted as QueueTracksInserted;
     pub use crate::proto::qconnect::SrvrCtrlQueueTracksRemoved as QueueTracksRemoved;
     pub use crate::proto::qconnect::SrvrCtrlQueueTracksReordered as QueueTracksReordered;
     pub use crate::proto::qconnect::SrvrCtrlQueueVersionChanged as QueueVersionChanged;
-    pub use crate::proto::qconnect::SrvrCtrlQueueErrorMessage as QueueErrorMessage;
 
     // Autoplay
     pub use crate::proto::qconnect::SrvrCtrlAutoplayModeSet as AutoplayModeSet;
@@ -113,25 +113,34 @@ pub mod notify {
     // Renderer presence
     pub use crate::proto::qconnect::SrvrCtrlActiveRendererChanged as ActiveRendererChanged;
     pub use crate::proto::qconnect::SrvrCtrlAddRenderer as AddRenderer;
-    pub use crate::proto::qconnect::SrvrCtrlUpdateRenderer as UpdateRenderer;
     pub use crate::proto::qconnect::SrvrCtrlRemoveRenderer as RemoveRenderer;
+    pub use crate::proto::qconnect::SrvrCtrlUpdateRenderer as UpdateRenderer;
 
     // Renderer state broadcasts
+    pub use crate::proto::qconnect::SrvrCtrlDeviceAudioQualityChanged as DeviceAudioQualityChanged;
+    pub use crate::proto::qconnect::SrvrCtrlFileAudioQualityChanged as FileAudioQualityChanged;
+    pub use crate::proto::qconnect::SrvrCtrlMaxAudioQualityChanged as MaxAudioQualityChanged;
     pub use crate::proto::qconnect::SrvrCtrlRendererStateUpdated as RendererStateUpdated;
     pub use crate::proto::qconnect::SrvrCtrlVolumeChanged as VolumeChanged;
     pub use crate::proto::qconnect::SrvrCtrlVolumeMuted as VolumeMuted;
-    pub use crate::proto::qconnect::SrvrCtrlMaxAudioQualityChanged as MaxAudioQualityChanged;
-    pub use crate::proto::qconnect::SrvrCtrlFileAudioQualityChanged as FileAudioQualityChanged;
-    pub use crate::proto::qconnect::SrvrCtrlDeviceAudioQualityChanged as DeviceAudioQualityChanged;
 }
 
 // Common types re-exported at module root
 pub use crate::proto::qconnect::{
     // Enums
-    BufferState, DeviceType, LoopMode, PlayingState,
+    BufferState,
     // Shared structures
-    DeviceCapabilities, DeviceInfo, Position, QueueItemRef, QueueRendererState, QueueTrackRef,
-    QueueVersion, RendererState,
+    DeviceCapabilities,
+    DeviceInfo,
+    DeviceType,
+    LoopMode,
+    PlayingState,
+    Position,
+    QueueItemRef,
+    QueueRendererState,
+    QueueTrackRef,
+    QueueVersion,
+    RendererState,
 };
 
 // ============================================================================
@@ -148,14 +157,16 @@ pub trait QueueRendererStateExt {
 
 impl QueueRendererStateExt for QueueRendererState {
     fn state(&self) -> Option<PlayingState> {
-        self.playing_state.and_then(|i| PlayingState::try_from(i).ok())
+        self.playing_state
+            .and_then(|i| PlayingState::try_from(i).ok())
     }
     fn set_state(&mut self, state: PlayingState) -> &mut Self {
         self.playing_state = Some(state.into());
         self
     }
     fn buffer(&self) -> Option<BufferState> {
-        self.buffer_state.and_then(|i| BufferState::try_from(i).ok())
+        self.buffer_state
+            .and_then(|i| BufferState::try_from(i).ok())
     }
     fn set_buffer(&mut self, state: BufferState) -> &mut Self {
         self.buffer_state = Some(state.into());
@@ -170,7 +181,8 @@ pub trait SetStateExt {
 
 impl SetStateExt for cmd::SetState {
     fn state(&self) -> Option<PlayingState> {
-        self.playing_state.and_then(|i| PlayingState::try_from(i).ok())
+        self.playing_state
+            .and_then(|i| PlayingState::try_from(i).ok())
     }
 }
 

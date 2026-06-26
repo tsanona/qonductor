@@ -12,23 +12,21 @@ use tokio::sync::{mpsc, oneshot};
 use tokio::time::{Duration, interval};
 use tracing::{debug, info, warn};
 
-use crate::Result;
 use crate::config::{ConnectCredentials, DeviceConfig};
 use crate::connection::{Connection, ConnectionWriter};
 use crate::event::{
-    dispatch_notification, ActivationState, Command, Notification, Responder, SessionEvent,
+    ActivationState, Command, Notification, Responder, SessionEvent, dispatch_notification,
 };
 use crate::msg::{
-    ctrl::{
-        self, AskForQueueState, AskForRendererState, SetActiveRenderer,
-    },
+    QueueRendererState,
+    ctrl::{self, AskForQueueState, AskForRendererState, SetActiveRenderer},
     report::{
         FileAudioQualityChanged, MaxAudioQualityChanged, StateUpdated, VolumeChanged, VolumeMuted,
     },
-    QueueRendererState,
 };
 use crate::proto::qconnect::{QConnectMessage, QConnectMessageType};
 use crate::session::SessionCommand;
+use crate::{AudioQuality, Result};
 
 // ============================================================================
 // Public API
@@ -53,8 +51,7 @@ pub(crate) async fn spawn_session(
     );
 
     // Connect and set up the WebSocket
-    let mut connection =
-        Connection::connect(&credentials.ws_endpoint, &credentials.ws_jwt).await?;
+    let mut connection = Connection::connect(&credentials.ws_endpoint, &credentials.ws_jwt).await?;
     connection.subscribe_default().await?;
     connection
         .join_session(&device_config.device_uuid, &device_config.friendly_name)
@@ -256,14 +253,13 @@ impl SessionRunner {
     }
 
     /// Report max audio quality capability to server.
-    /// Uses capability level (1-4), not format IDs.
-    async fn do_report_max_audio_quality(&mut self, quality: i32) -> Result<()> {
+    async fn do_report_max_audio_quality(&mut self, quality: AudioQuality) -> Result<()> {
         let msg = QConnectMessage {
             message_type: Some(
                 QConnectMessageType::MessageTypeRndrSrvrMaxAudioQualityChanged as i32,
             ),
             rndr_srvr_max_audio_quality_changed: Some(MaxAudioQualityChanged {
-                value: Some(quality),
+                value: Some(quality as i32),
             }),
             ..Default::default()
         };
@@ -512,9 +508,9 @@ impl SessionRunner {
                         // Otherwise emit as regular RendererStateUpdated
                         let _ = self
                             .event_tx
-                            .send(SessionEvent::Notification(Notification::RendererStateUpdated(
-                                rsu,
-                            )))
+                            .send(SessionEvent::Notification(
+                                Notification::RendererStateUpdated(rsu),
+                            ))
                             .await;
                     }
                 }
@@ -524,7 +520,10 @@ impl SessionRunner {
             t if t == QConnectMessageType::MessageTypeSrvrRndrSetState as i32 => {
                 if let Some(ss) = msg.srvr_rndr_set_state {
                     // Only respond if there's an actual state change request
-                    if ss.playing_state.is_some() || ss.current_position.is_some() || ss.current_queue_item.is_some() {
+                    if ss.playing_state.is_some()
+                        || ss.current_position.is_some()
+                        || ss.current_queue_item.is_some()
+                    {
                         let (tx, rx) = oneshot::channel();
                         let _ = self
                             .event_tx

@@ -8,9 +8,12 @@
 //! Run with debug: RUST_LOG=qonductor=debug QOBUZ_WS_JWT=xxx cargo run --example direct_auth
 
 use qonductor::{
-    ActivationState, BufferState, Command, ConnectCredentials, DeviceConfig, Notification,
-    PlayingState, SessionEvent, msg,
-    msg::{LoopModeSetExt, PositionExt, QueueRendererStateExt, SetStateExt, report::VolumeChanged},
+    ActivationState, AudioQuality, BufferState, Command, ConnectCredentials, DeviceConfig,
+    Notification, PlayingState, SessionEvent,
+    msg::{
+        self, LoopModeSetExt, PositionExt, QueueRendererStateExt, SetStateExt,
+        report::VolumeChanged,
+    },
 };
 use std::env;
 use tokio::signal;
@@ -91,7 +94,7 @@ async fn main() {
                             respond.send(ActivationState {
                                 muted: false,
                                 volume: 100,
-                                max_quality: 4,
+                                max_quality: AudioQuality::HiRes192,
                                 playback,
                             });
                         }

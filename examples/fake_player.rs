@@ -6,11 +6,14 @@
 //! Run with debug: QOBUZ_APP_ID=000000000 RUST_LOG=qonductor=debug,fake_player=debug cargo run --example fake_player
 
 use qonductor::{
-    msg, ActivationState, BufferState, Command, DeviceConfig, LoopMode, Notification, PlayingState,
-    SessionEvent, SessionManager,
-    msg::{PositionExt, QueueRendererStateExt, SetStateExt, LoopModeSetExt, report::VolumeChanged},
+    ActivationState, AudioQuality, BufferState, Command, DeviceConfig, LoopMode, Notification,
+    PlayingState, SessionEvent, SessionManager,
+    msg::{
+        self, LoopModeSetExt, PositionExt, QueueRendererStateExt, SetStateExt,
+        report::VolumeChanged,
+    },
 };
-use rand::{thread_rng, Rng};
+use rand::{Rng, thread_rng};
 use std::collections::HashMap;
 use std::env;
 use std::time::Instant;
@@ -195,9 +198,7 @@ impl FakePlayer {
 
     fn find_track_index(&self, queue_item_id: i32) -> Option<usize> {
         let target = queue_item_id as u64;
-        self.queue
-            .iter()
-            .position(|t| t.queue_item_id == target)
+        self.queue.iter().position(|t| t.queue_item_id == target)
     }
 
     // === Event handlers ===
@@ -246,7 +247,7 @@ impl FakePlayer {
     fn handle_set_volume(&mut self, volume: u32) -> VolumeChanged {
         self.volume = volume;
         VolumeChanged {
-            volume: Some(volume)
+            volume: Some(volume),
         }
     }
 
@@ -256,7 +257,7 @@ impl FakePlayer {
         ActivationState {
             muted: self.muted,
             volume: self.volume,
-            max_quality: 4, // HiRes 192kHz capability level
+            max_quality: AudioQuality::HiRes192,
             playback: self.renderer_state(),
         }
     }
@@ -313,7 +314,11 @@ impl FakePlayer {
             .unwrap_or(0);
         let queue_index = rsu.state.as_ref().and_then(|s| s.current_queue_index);
 
-        info!(position_ms, ?queue_index, "Restoring state from previous renderer");
+        info!(
+            position_ms,
+            ?queue_index,
+            "Restoring state from previous renderer"
+        );
         self.set_position(position_ms);
         if let Some(idx) = queue_index {
             self.current_track_index = Some(idx as usize);

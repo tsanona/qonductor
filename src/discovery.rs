@@ -225,8 +225,8 @@ async fn connect_to_qconnect(
         .endpoint
         .unwrap_or_else(|| "wss://play.qobuz.com/ws".to_string());
 
-    let credentials = ConnectCredentials::new(ws_endpoint, req.jwt_qconnect.jwt)
-        .api_jwt(req.jwt_api.jwt);
+    let credentials =
+        ConnectCredentials::new(ws_endpoint, req.jwt_qconnect.jwt).api_jwt(req.jwt_api.jwt);
 
     // Send device selection event
     if let Err(e) = state
@@ -274,7 +274,10 @@ impl DeviceRegistry {
     /// Start the device registry with HTTP server on the given port.
     ///
     /// Returns the registry and a receiver for device selection events.
-    pub async fn start(port: u16, app_id: String) -> Result<(Self, mpsc::Receiver<DeviceSelected>)> {
+    pub async fn start(
+        port: u16,
+        app_id: String,
+    ) -> Result<(Self, mpsc::Receiver<DeviceSelected>)> {
         let (event_tx, event_rx) = mpsc::channel(16);
 
         let state = Arc::new(AppState {

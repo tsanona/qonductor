@@ -98,7 +98,14 @@ pub async fn connect(
         u.hyphenated().to_string()
     };
 
-    qconnect::spawn_session(&session_id, credentials, device_config, event_tx, command_rx).await?;
+    qconnect::spawn_session(
+        &session_id,
+        credentials,
+        device_config,
+        event_tx,
+        command_rx,
+    )
+    .await?;
 
     Ok(DeviceSession::new(event_rx, shared_command_tx))
 }

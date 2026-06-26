@@ -7,6 +7,7 @@
 
 use tokio::sync::oneshot;
 
+use crate::AudioQuality;
 use crate::msg::report::VolumeChanged;
 use crate::msg::{self, QueueRendererState};
 use crate::proto::qconnect::{QConnectMessage, QConnectMessageType};
@@ -25,9 +26,8 @@ pub struct ActivationState {
     pub muted: bool,
     /// Current volume (0-100).
     pub volume: u32,
-    /// Maximum audio quality capability level (1-4).
-    /// 1 = MP3, 2 = FLAC Lossless, 3 = HiRes 96kHz, 4 = HiRes 192kHz
-    pub max_quality: i32,
+    /// Maximum audio quality capability.
+    pub max_quality: AudioQuality,
     /// Current playback state.
     pub playback: QueueRendererState,
 }

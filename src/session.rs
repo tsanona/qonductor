@@ -8,8 +8,8 @@ use std::sync::Arc;
 use tokio::sync::{RwLock, mpsc};
 
 use crate::event::SessionEvent;
-use crate::msg;
 use crate::msg::QueueRendererState;
+use crate::{AudioQuality, msg};
 
 // ============================================================================
 // Session Commands (user -> server)
@@ -27,8 +27,8 @@ pub enum SessionCommand {
     ReportVolume(u32),
     /// Report mute state.
     ReportVolumeMuted(bool),
-    /// Report max audio quality capability (1-4).
-    ReportMaxAudioQuality(i32),
+    /// Report max audio quality capability.
+    ReportMaxAudioQuality(AudioQuality),
     /// Report current file's sample rate in Hz.
     ReportFileAudioQuality(u32),
     QueueLoadTracks(msg::ctrl::QueueLoadTracks),
@@ -136,7 +136,7 @@ impl DeviceSession {
     }
 
     /// Report max audio quality capability to the server.
-    pub async fn report_max_audio_quality(&self, quality: i32) -> crate::Result<()> {
+    pub async fn report_max_audio_quality(&self, quality: AudioQuality) -> crate::Result<()> {
         self.send_command(SessionCommand::ReportMaxAudioQuality(quality))
             .await
     }
@@ -155,8 +155,7 @@ impl DeviceSession {
 
     /// Add tracks to the end of the queue.
     pub async fn queue_add_tracks(&self, cmd: msg::ctrl::QueueAddTracks) -> crate::Result<()> {
-        self.send_command(SessionCommand::QueueAddTracks(cmd))
-            .await
+        self.send_command(SessionCommand::QueueAddTracks(cmd)).await
     }
 
     /// Insert tracks after a specific position.

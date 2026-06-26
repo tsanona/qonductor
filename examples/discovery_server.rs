@@ -7,9 +7,12 @@
 //! Run with debug: RUST_LOG=qonductor=debug QOBUZ_APP_ID=000000000 cargo run --example discovery_server
 
 use qonductor::{
-    ActivationState, BufferState, Command, DeviceConfig, DeviceSession, Notification, PlayingState,
-    SessionEvent, SessionManager, msg,
-    msg::{LoopModeSetExt, PositionExt, QueueRendererStateExt, SetStateExt, report::VolumeChanged},
+    ActivationState, AudioQuality, BufferState, Command, DeviceConfig, DeviceSession, Notification,
+    PlayingState, SessionEvent, SessionManager,
+    msg::{
+        self, LoopModeSetExt, PositionExt, QueueRendererStateExt, SetStateExt,
+        report::VolumeChanged,
+    },
 };
 use std::env;
 
@@ -59,7 +62,7 @@ async fn handle_device_events(device_name: String, mut session: DeviceSession) {
                     respond.send(ActivationState {
                         muted: false,
                         volume: 100,
-                        max_quality: 4,
+                        max_quality: AudioQuality::HiRes192,
                         playback,
                     });
                 }
