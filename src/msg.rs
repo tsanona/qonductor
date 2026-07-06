@@ -149,24 +149,14 @@ pub use crate::proto::qconnect::{
 
 /// Extension trait for [`QueueRendererState`] with typed enum accessors.
 pub trait QueueRendererStateExt {
-    fn state(&self) -> Option<PlayingState>;
     fn set_state(&mut self, state: PlayingState) -> &mut Self;
-    fn buffer(&self) -> Option<BufferState>;
     fn set_buffer(&mut self, state: BufferState) -> &mut Self;
 }
 
 impl QueueRendererStateExt for QueueRendererState {
-    fn state(&self) -> Option<PlayingState> {
-        self.playing_state
-            .and_then(|i| PlayingState::try_from(i).ok())
-    }
     fn set_state(&mut self, state: PlayingState) -> &mut Self {
         self.playing_state = Some(state.into());
         self
-    }
-    fn buffer(&self) -> Option<BufferState> {
-        self.buffer_state
-            .and_then(|i| BufferState::try_from(i).ok())
     }
     fn set_buffer(&mut self, state: BufferState) -> &mut Self {
         self.buffer_state = Some(state.into());
@@ -174,13 +164,49 @@ impl QueueRendererStateExt for QueueRendererState {
     }
 }
 
-/// Extension trait for [`cmd::SetState`] with typed enum accessors.
-pub trait SetStateExt {
-    fn state(&self) -> Option<PlayingState>;
+// TODO: Currently the getter functions for optional enums return enum value or default.
+// Check: https://github.com/tokio-rs/prost/issues/1027
+
+/// Extension trait for types that contain [PlayingState] with typed enum accessors.
+pub trait OptionalBufferStateExt {
+    fn optional_buffer_state(&self) -> Option<BufferState>;
 }
 
-impl SetStateExt for cmd::SetState {
-    fn state(&self) -> Option<PlayingState> {
+impl OptionalBufferStateExt for QueueRendererState {
+    fn optional_buffer_state(&self) -> Option<BufferState> {
+        self.buffer_state
+            .and_then(|i| BufferState::try_from(i).ok())
+    }
+}
+
+impl OptionalBufferStateExt for RendererState {
+    fn optional_buffer_state(&self) -> Option<BufferState> {
+        self.buffer_state
+            .and_then(|i| BufferState::try_from(i).ok())
+    }
+}
+
+/// Extension trait for types that contain [PlayingState] with typed enum accessors.
+pub trait OptionalPlayingStateExt {
+    fn optional_playing_state(&self) -> Option<PlayingState>;
+}
+
+impl OptionalPlayingStateExt for QueueRendererState {
+    fn optional_playing_state(&self) -> Option<PlayingState> {
+        self.playing_state
+            .and_then(|i| PlayingState::try_from(i).ok())
+    }
+}
+
+impl OptionalPlayingStateExt for cmd::SetState {
+    fn optional_playing_state(&self) -> Option<PlayingState> {
+        self.playing_state
+            .and_then(|i| PlayingState::try_from(i).ok())
+    }
+}
+
+impl OptionalPlayingStateExt for RendererState {
+    fn optional_playing_state(&self) -> Option<PlayingState> {
         self.playing_state
             .and_then(|i| PlayingState::try_from(i).ok())
     }
@@ -213,6 +239,12 @@ pub trait PositionExt {
     /// let pos = Position::now(12345); // 12.345 seconds into the track
     /// ```
     fn now(value: u32) -> Position;
+
+    /// Compute elapsed time since timestamp and now.
+    fn elapsed(&self) -> Option<u64>;
+
+    /// Compute new position based on elapsed time since timestamp.
+    fn advance(self) -> Position;
 }
 
 impl PositionExt for Position {
@@ -220,6 +252,20 @@ impl PositionExt for Position {
         Position {
             timestamp: Some(now_ms()),
             value: Some(value),
+        }
+    }
+
+    fn elapsed(&self) -> Option<u64> {
+        self.timestamp.map(|t| now_ms() - t)
+    }
+
+    fn advance(self) -> Position {
+        Position {
+            timestamp: Some(now_ms()),
+            value: self
+                .value
+                .zip(self.elapsed())
+                .map(|(value, elapsed)| value + (elapsed as u32)),
         }
     }
 }

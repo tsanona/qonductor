@@ -9,7 +9,7 @@ use qonductor::{
     ActivationState, AudioQuality, BufferState, Command, DeviceConfig, LoopMode, Notification,
     PlayingState, SessionEvent, SessionManager,
     msg::{
-        self, LoopModeSetExt, PositionExt, QueueRendererStateExt, SetStateExt,
+        self, LoopModeSetExt, OptionalPlayingStateExt, PositionExt, QueueRendererStateExt,
         report::VolumeChanged,
     },
 };
@@ -204,11 +204,11 @@ impl FakePlayer {
     // === Event handlers ===
 
     fn handle_playback_command(&mut self, cmd: &msg::cmd::SetState) -> msg::QueueRendererState {
-        let new_state = cmd.state().unwrap_or(self.state); // None means keep current
+        let new_state = cmd.optional_playing_state().unwrap_or(self.state); // None means keep current
         let position_ms = cmd.current_position;
         let queue_item_id = cmd.current_queue_item.as_ref().map(|q| q.queue_item_id);
 
-        info!(state = ?cmd.state(), ?position_ms, ?queue_item_id, "Playback command received");
+        info!(state = ?cmd.optional_playing_state(), ?position_ms, ?queue_item_id, "Playback command received");
 
         let was_playing = self.state == PlayingState::Playing;
 

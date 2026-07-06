@@ -10,7 +10,7 @@ use qonductor::{
     ActivationState, AudioQuality, BufferState, Command, DeviceConfig, DeviceSession, Notification,
     PlayingState, SessionEvent, SessionManager,
     msg::{
-        self, LoopModeSetExt, PositionExt, QueueRendererStateExt, SetStateExt,
+        self, LoopModeSetExt, OptionalPlayingStateExt, PositionExt, QueueRendererStateExt,
         report::VolumeChanged,
     },
 };
@@ -35,7 +35,7 @@ async fn handle_device_events(device_name: String, mut session: DeviceSession) {
                     println!(
                         "[{}] Playback command: state={:?} position={:?} queue_item={:?}",
                         device_name,
-                        cmd.state(),
+                        cmd.optional_playing_state(),
                         position_ms,
                         queue_item_id
                     );
@@ -45,7 +45,10 @@ async fn handle_device_events(device_name: String, mut session: DeviceSession) {
                         ..Default::default()
                     };
                     response
-                        .set_state(cmd.state().unwrap_or(PlayingState::Stopped))
+                        .set_state(
+                            cmd.optional_playing_state()
+                                .unwrap_or(PlayingState::Stopped),
+                        )
                         .set_buffer(BufferState::Ok);
                     respond.send(response);
                 }
